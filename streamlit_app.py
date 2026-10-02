@@ -484,7 +484,7 @@ if st.button("🎲 Generar nueva pregunta", type="primary", use_container_width=
     with st.spinner("Diseñando pregunta de autoevaluación..."):
         client = genai.Client(api_key=api_key)
 
-        modelos = ["gemini-3.8-flash", "gemini-3.7-flash"]
+        modelos = ["gemini-3.7-flash"]
         pregunta_generada = None
 
         for modelo in modelos:
