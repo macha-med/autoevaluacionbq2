@@ -491,9 +491,9 @@ if st.button("🎲 Generar nueva pregunta", type="primary", use_container_width=
             for intento in range(2):
                 try:
                     response = client.models.generate_content(
-                        model=modelo,
-                        contents=f"{SYSTEM_PROMPT}\n\n{prompt_usuario}"
-                    )
+    model="gemini-3.7-flash",
+    contents=f"{SYSTEM_PROMPT}\n\n{prompt_usuario}"
+)
                     pregunta_generada = response.text
                     break
                 except Exception:
