@@ -480,25 +480,34 @@ if st.button("🎲 Generar nueva pregunta", type="primary", use_container_width=
     - Formato solicitado: {tipo_pregunta}
     - Nivel de Bloom solicitado: {nivel_bloom}
     """
-    
-with st.spinner("Diseñando pregunta de autoevaluación..."):
-    client = genai.Client(api_key=api_key)
 
-    for intento in range(3):
-        try:
-            response = client.models.generate_content(
-                model="gemini-3.8-flash",
-                contents=f"{SYSTEM_PROMPT}\n\n{prompt_usuario}"
+    with st.spinner("Diseñando pregunta de autoevaluación..."):
+        client = genai.Client(api_key=api_key)
+
+        modelos = ["gemini-3.8-flash", "gemini-3.7-flash"]
+        pregunta_generada = None
+
+        for modelo in modelos:
+            for intento in range(2):
+                try:
+                    response = client.models.generate_content(
+                        model=modelo,
+                        contents=f"{SYSTEM_PROMPT}\n\n{prompt_usuario}"
+                    )
+                    pregunta_generada = response.text
+                    break
+                except Exception:
+                    if intento == 0:
+                        import time
+                        time.sleep(5)
+
+            if pregunta_generada:
+                break
+
+        if pregunta_generada:
+            st.session_state.pregunta_actual = pregunta_generada
+        else:
+            st.error(
+                "No se ha podido generar la pregunta en este momento. "
+                "Vuelve a intentarlo dentro de unos minutos."
             )
-            st.session_state.pregunta_actual = response.text
-            break
-
-        except Exception as e:
-            if intento < 2:
-                import time
-                time.sleep(5)
-            else:
-                st.error(
-                    "Gemini está temporalmente saturado. "
-                    "Espera unos segundos y vuelve a intentarlo."
-                )
