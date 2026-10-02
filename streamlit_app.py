@@ -485,17 +485,17 @@ if st.button("🎲 Generar nueva pregunta", type="primary", use_container_width=
     with st.spinner("Diseñando pregunta de autoevaluación..."):
         client = genai.Client(api_key=api_key)
 
-        modelos = ["gemini-3.7-flash"]
-        pregunta_generada = None
+        response = client.models.generate_content(
+            model="gemini-3.7-flash",
+            contents=f"{SYSTEM_PROMPT}\n\n{prompt_usuario}",
+            config=types.GenerateContentConfig(
+                thinking_config=types.ThinkingConfig(
+                    thinking_level="low"
+                )
+            )
+        )
 
-        for modelo in modelos:
-            for intento in range(2):
-                try:
-                    response = client.models.generate_content(
-    model="gemini-3.7-flash",
-    contents=f"{SYSTEM_PROMPT}\n\n{prompt_usuario}"
-)
-                    pregunta_generada = response.text
+        st.session_state.pregunta_actual = response.text
                     break
                 except Exception:
                     if intento == 0:
