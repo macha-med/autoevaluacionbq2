@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-import google.generativeai as genai
+import google import genai
 
 st.set_page_config(page_title="Autoevaluación de Bioquímica", layout="centered")
 
@@ -13,8 +13,6 @@ api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
     st.error("Falta la clave de API. Por favor, configúrala en los secretos de Streamlit (GEMINI_API_KEY).")
     st.stop()
-
-genai.configure(api_key=api_key)
 
 # --- APUNTES Y MATERIAL FIJO DEL TEMA (OPCIÓN B) ---
 TEXTO_APUNTES = """
@@ -483,13 +481,15 @@ if st.button("🎲 Generar nueva pregunta", type="primary", use_container_width=
     - Nivel de Bloom solicitado: {nivel_bloom}
     """
     
-    with st.spinner("Diseñando pregunta de autoevaluación..."):
-        model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
-            system_instruction=SYSTEM_PROMPT
-        )
-        response = model.generate_content(prompt_usuario)
-        st.session_state.pregunta_actual = response.text
+with st.spinner("Diseñando pregunta de autoevaluación..."):
+    client = genai.Client(api_key=api_key)
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=f"{SYSTEM_PROMPT}\n\n{prompt_usuario}"
+    )
+
+    st.session_state.pregunta_actual = response.text
 
 if st.session_state.pregunta_actual:
     st.markdown("---")
