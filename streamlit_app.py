@@ -496,19 +496,3 @@ if st.button("🎲 Generar nueva pregunta", type="primary", use_container_width=
         )
 
         st.session_state.pregunta_actual = response.text
-                    break
-                except Exception:
-                    if intento == 0:
-                        import time
-                        time.sleep(5)
-
-            if pregunta_generada:
-                break
-
-        if pregunta_generada:
-            st.session_state.pregunta_actual = pregunta_generada
-        else:
-            st.error(
-                "No se ha podido generar la pregunta en este momento. "
-                "Vuelve a intentarlo dentro de unos minutos."
-            )
