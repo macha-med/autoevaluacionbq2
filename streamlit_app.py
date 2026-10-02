@@ -484,13 +484,21 @@ if st.button("🎲 Generar nueva pregunta", type="primary", use_container_width=
 with st.spinner("Diseñando pregunta de autoevaluación..."):
     client = genai.Client(api_key=api_key)
 
-    response = client.models.generate_content(
-        model="gemini-3.8-flash",
-        contents=f"{SYSTEM_PROMPT}\n\n{prompt_usuario}"
-    )
+    for intento in range(3):
+        try:
+            response = client.models.generate_content(
+                model="gemini-3.8-flash",
+                contents=f"{SYSTEM_PROMPT}\n\n{prompt_usuario}"
+            )
+            st.session_state.pregunta_actual = response.text
+            break
 
-    st.session_state.pregunta_actual = response.text
-
-if st.session_state.pregunta_actual:
-    st.markdown("---")
-    st.markdown(st.session_state.pregunta_actual)
+        except Exception as e:
+            if intento < 2:
+                import time
+                time.sleep(5)
+            else:
+                st.error(
+                    "Gemini está temporalmente saturado. "
+                    "Espera unos segundos y vuelve a intentarlo."
+                )
