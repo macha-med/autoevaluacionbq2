@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-import google import genai
+from google import genai
 
 st.set_page_config(page_title="Autoevaluación de Bioquímica", layout="centered")
 
