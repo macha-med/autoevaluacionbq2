@@ -1,22 +1,22 @@
 import os
 import streamlit as st
-from google import genai
+import google.generativeai as genai
 
 st.set_page_config(page_title="Autoevaluación de Bioquímica", layout="centered")
 
 st.title("🧪 Autoevaluación de Bioquímica Médica")
 st.write("Genera preguntas dinámicas adaptadas a los contenidos y nivel del tema.")
 
-# Inicializar cliente de Gemini
+# Configurar clave de API
 api_key = os.environ.get("GEMINI_API_KEY")
-client = genai.Client(api_key=api_key) if api_key else None
 
-if not client:
-    st.error("Falta la clave de API. Por favor, configúrala en los secretos de Streamlit.")
+if not api_key:
+    st.error("Falta la clave de API. Por favor, configúrala en los secretos de Streamlit (GEMINI_API_KEY).")
     st.stop()
 
+genai.configure(api_key=api_key)
+
 # --- APUNTES Y MATERIAL FIJO DEL TEMA (OPCIÓN B) ---
-# Pega aquí todo el texto de tus apuntes entre las triples comillas
 TEXTO_APUNTES = """
 1. FUNCIONES DEL AGUA
 
@@ -484,11 +484,11 @@ if st.button("🎲 Generar nueva pregunta", type="primary", use_container_width=
     """
     
     with st.spinner("Diseñando pregunta de autoevaluación..."):
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt_usuario,
-            config={"system_instruction": SYSTEM_PROMPT}
+        model = genai.GenerativeModel(
+            model_name="gemini-1.5-flash",
+            system_instruction=SYSTEM_PROMPT
         )
+        response = model.generate_content(prompt_usuario)
         st.session_state.pregunta_actual = response.text
 
 if st.session_state.pregunta_actual:
